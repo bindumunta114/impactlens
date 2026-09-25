@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+const { scanWorkspace } = require('./src/core/workspaceScanner');
+
 function getFileHash(filePath) {
     const content = fs.readFileSync(filePath);
     return crypto
@@ -12,6 +14,15 @@ function getFileHash(filePath) {
 }
 
 function activate(context) {
+
+        scanWorkspace()
+        .then(files => {
+            console.log('CodeImpact workspace files:');
+            console.log(files);
+        })
+        .catch(error => {
+            console.error('Workspace scan failed:', error);
+        });
 
     const command = vscode.commands.registerCommand(
         'codeimpact.findImpact',
@@ -83,7 +94,7 @@ function activate(context) {
                         'utf8'
                     )
                 );
-            } catch (error) {
+            } catch {
                 oldHashes = {};
             }
 
