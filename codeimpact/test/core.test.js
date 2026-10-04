@@ -58,4 +58,27 @@ describe('Dependency Graph and Impact Analyzer', function () {
         assert.ok(file.language);
     }
 });
+it('should analyze C file dependencies and functions', function () {
+    const { analyzeCFile } = require('../src/analyzers/cAnalyzer');
+
+    const content = `
+        #include <stdio.h>
+        #include "database.h"
+
+        void calculate() {
+        }
+    `;
+
+    const result = analyzeCFile('main.c', content);
+
+    assert.deepStrictEqual(
+        result.dependencies,
+        ['stdio.h', 'database.h']
+    );
+
+    assert.deepStrictEqual(
+        result.symbols,
+        ['calculate']
+    );
+});
 });
