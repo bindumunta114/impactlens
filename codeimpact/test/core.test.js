@@ -2,6 +2,10 @@ const assert = require('assert');
 const { describe, it } = require('mocha');
 const vscode = require('vscode');
 
+const fs = require('fs');
+const path = require('path');
+
+
 const {
     analyzeWorkspace
 } = require('../src/core/workspaceAnalyzer');
@@ -58,18 +62,13 @@ describe('Dependency Graph and Impact Analyzer', function () {
         assert.ok(file.language);
     }
 });
-it('should analyze C file dependencies and functions', function () {
+it('should analyze C sample file using Tree-sitter', function () {
     const { analyzeCFile } = require('../src/analyzers/cAnalyzer');
 
-    const content = `
-        #include <stdio.h>
-        #include "database.h"
+    const filePath = path.join(__dirname, 'c-sample.c');
+    const content = fs.readFileSync(filePath, 'utf8');
 
-        void calculate() {
-        }
-    `;
-
-    const result = analyzeCFile('main.c', content);
+    const result = analyzeCFile(filePath, content);
 
     assert.deepStrictEqual(
         result.dependencies,
@@ -78,7 +77,7 @@ it('should analyze C file dependencies and functions', function () {
 
     assert.deepStrictEqual(
         result.symbols,
-        ['calculate']
+        ['add', 'print_result', 'main']
     );
 });
 });
